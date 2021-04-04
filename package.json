@@ -17,6 +17,18 @@
 		"@types/prompts": "^2.0.9"
 	},
 	"keywords": [],
+	"directories": {
+		"lib": "lib",
+		"test": "tests"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/prokopschield/dogechat.git"
+	},
+	"bugs": {
+		"url": "https://github.com/prokopschield/dogechat/issues"
+	},
+	"homepage": "https://github.com/prokopschield/dogechat#readme",
 	"dependencies": {
 		"doge-json": "^1.0.1",
 		"dogehouse.js": "^2.0.2",
