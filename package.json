@@ -1,7 +1,7 @@
 {
 	"name": "dogechat",
 	"description": "Command-line DogeHouse client",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"main": "lib/index",
 	"bin": {
 		"dogechat": "lib/cli.js"
@@ -32,6 +32,7 @@
 	"dependencies": {
 		"doge-json": "^1.0.1",
 		"dogehouse.js": "^2.0.2",
-		"prompts": "^2.4.0"
+		"prompts": "^2.4.0",
+		"ws": "^7.4.4"
 	}
 }

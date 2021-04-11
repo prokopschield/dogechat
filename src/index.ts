@@ -1,12 +1,10 @@
-import {
-	BotUser,
+const {
 	Client,
-	MessageController,
-} from 'dogehouse.js';
+} = require('dogehouse.js');
 
-import {
+const {
 	EVENT
-} from 'dogehouse.js/src/util/constraints';
+} = require('dogehouse.js/src/util/constraints');
 
 import {
 	getConfig,
@@ -27,9 +25,9 @@ if (!config.users) {
 
 ((async () => {
 
-	let { users }: {
+	let users: {
 		[UUID: string]: UserConfig;
-	} = config;
+	} = config.users;
 
 	let usernames = Object.keys(config.users).map(uuid => config.users[uuid].username);
 
@@ -84,7 +82,7 @@ if (!config.users) {
 			type: 'select',
 			name: 'roomSel',
 			message: 'Select room',
-			choices: topRooms.map(room => room.name),
+			choices: topRooms.map((room: any) => room.name),
 		}
 	]);
 
@@ -93,67 +91,12 @@ if (!config.users) {
 
 	process.stdin.resume();
 
-	const maxRows = parseInt(process.env.LINES) || process.stdout.rows || 20;
-	let lines: string[] = [''];
-	let msgbuf = '';
-	let maxll = 0;
-
-	process.stdout.write('> ');
 	process.stdin.on('data', (data: Buffer) => {
-		msgbuf += data.toString('utf-8');
-		if (msgbuf.match(/[\r\n]/)) {
-			const message = msgbuf.trim();
-			if (message.length > maxll) {
-				maxll = message.length;
-			}
-			app.bot.sendMessage([ message ]);
-			msgbuf = '';
-			process.stdout.write('\x1b[A' + ' '.repeat(maxll) + '\r' + '> ');
-		}
+		app.bot.sendMessage([data.toString('utf8')]);
 	});
 
-	app.on(EVENT.NEW_CHAT_MESSAGE, (message: MessageController) => {
-		if (lines.length > (process.stdout.rows || maxRows)) {
-			lines.shift();
-		}
-		let line = `${message.author.username}: ${message}`;
-		if (line.length >= maxll) {
-			maxll = line.length;
-		} else {
-			line += ' '.repeat(maxll - line.length);
-		}
-		lines.push(line);
-		if (maxll > process.stdout.columns) sliceLines();
-		process.stdout.write( ''
-			+ '\x1b[A'.repeat(lines.length + 2)
-			+ lines.join('\r\n')
-			+ '\r\n> \x1b[F'
-		);
+	app.on(EVENT.NEW_CHAT_MESSAGE, (message: any) => {
+		process.stdout.write(`\r${message.author.username}${' '.repeat(17 - message.author.username.length)}=> ${message.content}\r\n$> `);
 	});
-
-	function sliceLines () {
-		const maxlen = process.stdout.columns - 8;
-		const regex = new RegExp(`^.{0,${maxlen}} `);
-		const newlines: string[] = [];
-		for (let line of lines) {
-			if (line.length <= maxlen) {
-				newlines.push(line);
-			} else {
-				let first = true;
-				do {
-					let [ segment ] = line.match(regex);
-					line = line.substr(segment.length);
-					if (first) {
-						first = false;
-						newlines.push(segment.trim());
-					} else {
-						newlines.push('....' + segment.trim());
-					}
-				} while (line.length > maxlen);
-				newlines.push('....' + line);
-			}
-		}
-		lines = newlines;
-	}
 
 })());
